@@ -67,7 +67,7 @@ void Game::InitGame()
     }
 
     LocateApple();
-    m_timer_id = startTimer(DELAY);
+    m_timer_id = startTimer(DELAY);//start the slot timerEvent() with DELAY
 }
 
 void Game::GameOver()
