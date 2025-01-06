@@ -11,7 +11,6 @@
 #include <QMessageBox>
 
 
-
 enum class Directions
 {
     left,
@@ -39,20 +38,18 @@ private:
     static const int DELAY = 150;
 
     int m_timer_id;
-
     Directions m_dir;
-
     bool m_in_game = false;
     QVector<QPoint> m_dots;
-
-
     QPoint m_apple;
+
     void LocateApple();
     void InitGame();
     void GameOver();
     void DoDrawing();
     void Move();
     void CheckField();
+    void CheckIsAppleBitten();
 };
 
 #endif // GAME_H

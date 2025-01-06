@@ -1,5 +1,5 @@
 #include "game.h"
-#include <QDebug>
+//#include <QDebug>
 
 Game::Game()
 {
@@ -8,13 +8,13 @@ Game::Game()
     InitGame();
 }
 
-void Game::timerEvent(QTimerEvent *event)
+void Game::timerEvent(QTimerEvent *event)//main gameplay
 {
     Q_UNUSED(event);
 
     if (m_in_game)
     {
-        //CheckApple();
+        CheckIsAppleBitten();
         Move();
         CheckField();
     }
@@ -24,18 +24,25 @@ void Game::timerEvent(QTimerEvent *event)
 void Game::keyPressEvent(QKeyEvent *event)
 {
     int key = event->key();
-    switch (key) {
-    case Qt::Key_Left:
-        qDebug() << "Key_Left";
-        break;
-    case Qt::Key_Right:
-        qDebug() << "Key_Right";
-        break;
-
+    if (key == Qt::Key_Left && m_dir != Directions::right)
+    {
+        m_dir = Directions::left;
+    }
+    if (key == Qt::Key_Right && m_dir != Directions::left)
+    {
+        m_dir = Directions::right;
+    }
+    if (key == Qt::Key_Up && m_dir != Directions::down)
+    {
+        m_dir = Directions::up;
+    }
+    if (key == Qt::Key_Down && m_dir != Directions::up)
+    {
+        m_dir = Directions::down;
     }
 }
 
-void Game::paintEvent(QPaintEvent *event)
+void Game::paintEvent(QPaintEvent *event)//draw all when init the Window and when this->repaint()
 {
     Q_UNUSED(event);
     DoDrawing();
@@ -53,7 +60,6 @@ void Game::InitGame()
 {
     m_in_game = true;
     m_dir = Directions::right;
-
     m_dots.resize(3);
     for (int i = 0; i < m_dots.size(); ++i) {
         m_dots[i].rx() = m_dots.size() - i - 1;
@@ -61,7 +67,6 @@ void Game::InitGame()
     }
 
     LocateApple();
-
     m_timer_id = startTimer(DELAY);
 }
 
@@ -91,9 +96,6 @@ void Game::DoDrawing()
                 qp.setBrush(Qt::green);
                 qp.drawEllipse(m_dots[i].x() * DOT_WIDTH, m_dots[i].y() * DOT_HEIGHT, FIELD_WIDTH, FIELD_HEIGHT);
             }
-
-
-
         }
 
 
@@ -157,5 +159,14 @@ void Game::CheckField()
     if (!m_in_game)
     {
         killTimer(m_timer_id);
+    }
+}
+
+void Game::CheckIsAppleBitten()
+{
+    if (m_apple == m_dots[0])
+    {
+        m_dots.emplaceBack(QPoint(0,0));//in method Move() last QPoint relocates
+        LocateApple();
     }
 }
