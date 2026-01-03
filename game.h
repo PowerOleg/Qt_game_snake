@@ -42,14 +42,18 @@ private:
     bool m_in_game = false;
     QVector<QPoint> m_dots;
     QPoint m_apple;
+    QPoint m_square;
 
     void LocateApple();
+    void LocateSquare();
     void InitGame();
     void GameOver();
     void DoDrawing();
     void Move();
     void CheckField();
     void CheckIsAppleBitten();
+    void CheckIsSquareBitten();
+    bool IsPointOnSnake(const QPoint& point);
 };
 
 #endif // GAME_H
