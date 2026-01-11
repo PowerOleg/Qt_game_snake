@@ -43,9 +43,11 @@ private:
     QVector<QPoint> m_dots;
     QPoint m_apple;
     QPoint m_square;
+    QPoint m_yellow_apple;  // 👉 НОВОЕ ПОЛЕ
 
     void LocateApple();
     void LocateSquare();
+    void LocateYellowApple();  // 👉 НОВЫЙ МЕТОД
     void InitGame();
     void GameOver();
     void DoDrawing();
@@ -53,6 +55,7 @@ private:
     void CheckField();
     void CheckIsAppleBitten();
     void CheckIsSquareBitten();
+    void CheckIsYellowAppleBitten();  // 👉 НОВЫЙ МЕТОД ПРОВЕРКИ
     bool IsPointOnSnake(const QPoint& point);
 };
 

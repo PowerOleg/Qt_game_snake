@@ -16,6 +16,7 @@ void Game::timerEvent(QTimerEvent *event)//main gameplay
     {
         CheckIsAppleBitten();
         CheckIsSquareBitten();
+        CheckIsYellowAppleBitten();
         Move();
         CheckField();
     }
@@ -64,6 +65,27 @@ void Game::LocateSquare()
         m_square.ry() = rand() % DOT_HEIGHT;
     } while (m_square == m_apple || IsPointOnSnake(m_square));
 }
+// ... после LocateSquare() или в любом удобном месте ...
+
+void Game::LocateYellowApple()
+{
+    QTime time = QTime::currentTime();
+    srand((uint) time.msec());
+    do {
+        m_yellow_apple.rx() = rand() % DOT_WIDTH;
+        m_yellow_apple.ry() = rand() % DOT_HEIGHT;
+    } while (m_yellow_apple == m_apple || m_yellow_apple == m_square || IsPointOnSnake(m_yellow_apple));
+}
+
+void Game::CheckIsYellowAppleBitten()
+{
+    if (m_yellow_apple == m_dots[0])
+    {
+        m_dots.append(QPoint(0, 0));  // +1
+        m_dots.append(QPoint(0, 0));  // +2 — жёлтое даёт два сегмента
+        LocateYellowApple();
+    }
+}
 
 bool Game::IsPointOnSnake(const QPoint& point)
 {
@@ -87,6 +109,7 @@ void Game::InitGame()
 
     LocateApple();
     LocateSquare();
+    LocateYellowApple();
     m_timer_id = startTimer(DELAY);//start the slot timerEvent() with DELAY
 }
 
@@ -104,30 +127,31 @@ void Game::DoDrawing()
     if (m_in_game)
     {
         qp.setBrush(Qt::red);
-        qp.drawEllipse(m_apple.x() * DOT_WIDTH, m_apple.y() * DOT_HEIGHT, FIELD_WIDTH, FIELD_HEIGHT);
+        qp.drawEllipse(m_apple.x() * DOT_WIDTH, m_apple.y() * DOT_HEIGHT, DOT_WIDTH, DOT_HEIGHT);
 
         qp.setBrush(Qt::blue);
-        qp.drawRect(m_square.x() * DOT_WIDTH, m_square.y() * DOT_HEIGHT, FIELD_WIDTH, FIELD_HEIGHT);
+        qp.drawRect(m_square.x() * DOT_WIDTH, m_square.y() * DOT_HEIGHT, DOT_WIDTH, DOT_HEIGHT);
+
+        qp.setBrush(Qt::yellow);  // 👉 Жёлтый цвет
+        qp.drawEllipse(m_yellow_apple.x() * DOT_WIDTH, m_yellow_apple.y() * DOT_HEIGHT, DOT_WIDTH, DOT_HEIGHT);
 
         for (int i = 0; i < m_dots.size(); ++i) {
             if (i == 0)
             {
                 qp.setBrush(Qt::white);
-                qp.drawEllipse(m_dots[i].x() * DOT_WIDTH, m_dots[i].y() * DOT_HEIGHT, FIELD_WIDTH, FIELD_HEIGHT);
+                qp.drawEllipse(m_dots[i].x() * DOT_WIDTH, m_dots[i].y() * DOT_HEIGHT, DOT_WIDTH, DOT_HEIGHT);
             } else
             {
                 qp.setBrush(Qt::green);
-                qp.drawEllipse(m_dots[i].x() * DOT_WIDTH, m_dots[i].y() * DOT_HEIGHT, FIELD_WIDTH, FIELD_HEIGHT);
+                qp.drawEllipse(m_dots[i].x() * DOT_WIDTH, m_dots[i].y() * DOT_HEIGHT, DOT_WIDTH, DOT_HEIGHT);
             }
         }
-
-
     } else
     {
         GameOver();
     }
-
 }
+
 
 void Game::Move()
 {
@@ -189,7 +213,7 @@ void Game::CheckIsAppleBitten()
 {
     if (m_apple == m_dots[0])
     {
-        m_dots.emplaceBack(QPoint(0,0));//in method Move() last QPoint relocates
+        m_dots.append(QPoint(0, 0));//in method Move() last QPoint relocates
         LocateApple();
     }
 }
@@ -198,7 +222,7 @@ void Game::CheckIsSquareBitten()
 {
     if (m_square == m_dots[0])
     {
-        m_dots.emplaceBack(QPoint(0,0));//in method Move() last QPoint relocates
+        m_dots.append(QPoint(0, 0));//in method Move() last QPoint relocates
         LocateSquare();
     }
 }
